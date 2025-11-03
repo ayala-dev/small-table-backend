@@ -147,3 +147,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.User'
