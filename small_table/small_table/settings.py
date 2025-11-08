@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'blog',
     'qna',
     'api',
+    'roles',  
+     'user_roles',
+
     'rest_framework',
 ]
 

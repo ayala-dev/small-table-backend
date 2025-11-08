@@ -11,5 +11,7 @@ urlpatterns = [
     path('api/orders/', include('orders.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/qna/', include('qna.urls')),
+    path('api/roles/', include('roles.urls')),
+    path('api/user-roles/', include('user_roles.urls')),
     path('api/', include('api.urls')),
 ]
