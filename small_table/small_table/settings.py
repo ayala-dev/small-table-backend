@@ -46,6 +46,9 @@ INSTALLED_APPS = [
     'blog',
     'qna',
     'api',
+    'roles',  
+     'user_roles',
+
     'rest_framework',
 ]
 
@@ -147,3 +150,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
     ],
 }
+
+# Custom User Model
+AUTH_USER_MODEL = 'users.User'
