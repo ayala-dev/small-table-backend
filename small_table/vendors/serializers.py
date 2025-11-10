@@ -1,0 +1,64 @@
+from rest_framework import serializers
+from .models import VendorProfile
+import re
+
+
+class VendorProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer לפרופיל ספק
+    ממיר בין VendorProfile (Python) ל-JSON (API)
+    """
+
+    # שדות נוספים לקריאה בלבד (read-only)
+    username = serializers.CharField(
+        source='user.username',
+        read_only=True
+    )
+    email = serializers.EmailField(
+        source='user.email',
+        read_only=True
+    )
+
+    class Meta:
+        model = VendorProfile
+        fields = [
+            'id',
+            'user',
+            'username',  # מהשדה שהוספנו למעלה
+            'email',  # מהשדה שהוספנו למעלה
+            'business_name',
+            'description',
+            'kashrut_level',
+            'address',
+            'image',
+            'is_active',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = [
+            'id',
+            'created_at',
+            'updated_at'
+        ]
+
+    def validate_business_name(self, value):
+        """
+        וולידציה לשם העסק
+        בודק שאין שם עסק זהה (case-insensitive)
+        """
+        # בודק אם כבר קיים עסק עם השם הזה
+        # (למעט העסק הנוכחי במקרה של עדכון)
+        queryset = VendorProfile.objects.filter(
+            business_name__iexact=value
+        )
+
+        # אם זה עדכון (יש instance), אל תבדוק את עצמו
+        if self.instance:
+            queryset = queryset.exclude(pk=self.instance.pk)
+
+        if queryset.exists():
+            raise serializers.ValidationError(
+                "עסק עם שם זה כבר קיים במערכת"
+            )
+
+        return value
