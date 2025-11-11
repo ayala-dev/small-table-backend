@@ -1,6 +1,11 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import OrderViewSet
+
+# יצירת Router אוטומטי
+router = DefaultRouter()
+router.register(r'orders', OrderViewSet, basename='order')
 
 urlpatterns = [
-    # כאן תוכלי להוסיף נתיבים של API או views
+    path('', include(router.urls)),
 ]
