@@ -3,7 +3,7 @@ import subprocess
 from pathlib import Path
 
 # 🏗️ הגדרות בסיס
-PROJECT_NAME = "small_table"
+PROJECT_NAME = "small_table_config"
 APPS = [
     "users",
     "vendors",
@@ -106,9 +106,9 @@ print("\n✅ הספרינט Setup הושלם בהצלחה! 🎉")
 print("📂 מבנה פרויקט נוצר:")
 print(f"   {Path.cwd()}")
 print("""
-📁 small_table/
+📁 small_table_config/
  ├── manage.py
- ├── small_table/
+ ├── small_table_config/
  │   ├── settings.py
  │   ├── urls.py
  │   └── __init__.py
