@@ -19,7 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_name',
             'description',
             'category',
-            'price',
+            'base_price_per_person',
             'is_available',
             'image',
             'created_at',
@@ -33,9 +33,9 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('שם מוצר לא יכול להיות ארוך מ-200 תווים.')
         return value
 
-    def validate_price(self, value):
+    def validate_base_price_per_person(self, value):
         if value is None or value <= 0:
-            raise serializers.ValidationError('מחיר חייב להיות גדול מ-0.')
+            raise serializers.ValidationError('מחיר למנה חייב להיות גדול מ-0.')
         return value
 
     def validate_category(self, value):
