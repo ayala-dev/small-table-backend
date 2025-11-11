@@ -34,17 +34,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
 
-        # ספק רואה את כל ההזמנות שהוזמנו ממנו
         if hasattr(user, 'vendor_profile'):
             return Order.objects.filter(
                 vendor=user.vendor_profile
-            ).select_related('user', 'vendor').order_by('-created_at')
+            ).select_related('user', 'vendor', 'package').prefetch_related('items').order_by('-created_at')
 
-        # לקוח רגיל רואה רק את ההזמנות שלו
         return Order.objects.filter(
             user=user
-        ).select_related('user', 'vendor').order_by('-created_at')
-
+        ).select_related('user', 'vendor', 'package').prefetch_related('items').order_by('-created_at')
     def perform_create(self, serializer):
         """
         בזמן יצירת הזמנה חדשה - מגדיר אוטומטי את המשתמש המחובר.

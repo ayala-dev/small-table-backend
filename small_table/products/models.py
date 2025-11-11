@@ -29,15 +29,13 @@ class Product(models.Model):
         verbose_name='קטגוריה',
         help_text='למשל: סלטים, מנות עיקריות, קינוחים'
     )
-    #משמש רק במצב של חבילה בהתאמה אישית, שבה המחיר הסופי מחושב לפי סכום המוצרים שנבחרו.
-    price = models.DecimalField(
+    # ⭐ מחיר בסיסי למנה - לשימוש בהרכבה אישית בלבד
+    base_price_per_person = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name='מחיר',
-        help_text='מחיר ליחידה'
+        verbose_name='מחיר למנה',
+        help_text='מחיר בסיסי למנה בהרכבה אישית (לא רלוונטי לחבילות מוכנות)'
     )
-
-
     is_available = models.BooleanField(
         default=True,
         verbose_name='זמין להזמנה'

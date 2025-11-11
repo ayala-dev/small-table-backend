@@ -8,7 +8,6 @@ class ProductAdmin(admin.ModelAdmin):
         'id',
         'product_name',
         'vendor',
-        'price',
         'is_available',
         'created_at'
     ]
@@ -20,7 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('vendor', 'product_name', 'description')
         }),
         ('תמחור וזמינות', {
-            'fields': ('price', 'is_available')
+            'fields': ('base_price_per_person', 'is_available')
         }),
         ('מדיה', {
             'fields': ('image',)
