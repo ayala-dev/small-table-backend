@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import VendorProfile
 from .serializers import VendorProfileSerializer
-from .permissions import IsVendorOwnerOrAdmin  # משימה 38: חיבור ההרשאה
+from .permissions import IsVendorOwnerOrAdmin
+
 class VendorProfileViewSet(viewsets.ModelViewSet):
    # ViewSet לניהול פרופילי ספקים
 

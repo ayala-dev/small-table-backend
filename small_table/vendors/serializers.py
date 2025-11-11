@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import VendorProfile
-import re
 
 
 class VendorProfileSerializer(serializers.ModelSerializer):
@@ -61,4 +60,51 @@ class VendorProfileSerializer(serializers.ModelSerializer):
                 "עסק עם שם זה כבר קיים במערכת"
             )
 
+        return value
+
+    def validate_address(self, value):
+        """
+        וולידציה לשדה הכתובת
+        """
+        if not value or len(value) < 2:
+            raise serializers.ValidationError('כתובת העסק חייבת להכיל לפחות 2 תווים.')
+        if len(value) > 300:
+            raise serializers.ValidationError('כתובת העסק לא יכולה להיות ארוכה מ-300 תווים.')
+        return value
+
+    def validate_kashrut_level(self, value):
+        """
+        וולידציה לשדה רמת הכשרות
+        """
+        if not value or len(value) < 2:
+            raise serializers.ValidationError('רמת הכשרות חייבת להכיל לפחות 2 תווים.')
+        if len(value) > 100:
+            raise serializers.ValidationError('רמת הכשרות לא יכולה להיות ארוכה מ-100 תווים.')
+        return value
+
+    def validate_description(self, value):
+        """
+        וולידציה לשדה תיאור העסק
+        """
+        if value and len(value) > 1000:
+            raise serializers.ValidationError('תיאור העסק לא יכול להיות ארוך מ-1000 תווים.')
+        return value
+
+    def validate_image(self, value):
+        """
+        וולידציה לשדה התמונה
+        """
+        if value:
+            valid_extensions = ['jpg', 'jpeg', 'png']
+            ext = str(value.name).split('.')[-1].lower()
+            if ext not in valid_extensions:
+                raise serializers.ValidationError('קובץ תמונה חייב להיות בפורמט jpg, jpeg או png בלבד.')
+        return value
+
+    def validate_is_active(self, value):
+        """
+        וולידציה לשדה is_active
+        """
+        if value not in [True, False]:
+            raise serializers.ValidationError('ערך is_active חייב להיות True או False בלבד.')
         return value
