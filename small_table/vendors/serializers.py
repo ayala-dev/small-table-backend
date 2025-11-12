@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from rest_framework.fields import CharField
+
 from .models import VendorProfile
 
 
@@ -9,14 +11,8 @@ class VendorProfileSerializer(serializers.ModelSerializer):
     """
 
     # שדות נוספים לקריאה בלבד (read-only)
-    username = serializers.CharField(
-        source='user.username',
-        read_only=True
-    )
-    email = serializers.EmailField(
-        source='user.email',
-        read_only=True
-    )
+    username = serializers.CharField(source='user.username',read_only=True )
+    email = serializers.EmailField(source='user.email', read_only=True)
 
     class Meta:
         model = VendorProfile
@@ -34,11 +30,7 @@ class VendorProfileSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = [
-            'id',
-            'created_at',
-            'updated_at'
-        ]
+        read_only_fields = [ 'id','created_at', 'updated_at']
 
     def validate_business_name(self, value):
         """
@@ -53,7 +45,7 @@ class VendorProfileSerializer(serializers.ModelSerializer):
 
         # אם זה עדכון (יש instance), אל תבדוק את עצמו
         if self.instance:
-            queryset = queryset.exclude(pk=self.instance.pk)
+            queryset = queryset.exclude(pk=self.instance.pk) #מוציא את העצם עצמו
 
         if queryset.exists():
             raise serializers.ValidationError(
@@ -70,16 +62,6 @@ class VendorProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('כתובת העסק חייבת להכיל לפחות 2 תווים.')
         if len(value) > 300:
             raise serializers.ValidationError('כתובת העסק לא יכולה להיות ארוכה מ-300 תווים.')
-        return value
-
-    def validate_kashrut_level(self, value):
-        """
-        וולידציה לשדה רמת הכשרות
-        """
-        if not value or len(value) < 2:
-            raise serializers.ValidationError('רמת הכשרות חייבת להכיל לפחות 2 תווים.')
-        if len(value) > 100:
-            raise serializers.ValidationError('רמת הכשרות לא יכולה להיות ארוכה מ-100 תווים.')
         return value
 
     def validate_description(self, value):

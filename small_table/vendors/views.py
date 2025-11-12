@@ -12,29 +12,27 @@ class VendorProfileViewSet(viewsets.ModelViewSet):
     queryset = VendorProfile.objects.select_related('user').all()
     serializer_class = VendorProfileSerializer
 
-    filter_backends = [
-        DjangoFilterBackend,  # סינון מדויק
-        filters.SearchFilter,  # חיפוש טקסט
-        filters.OrderingFilter  # מיון
-    ]
-    search_fields = [
+#רשימת כלים שמאפשרים להוסיף פילטירים
+    filter_backends = [ DjangoFilterBackend,  filters.SearchFilter,  filters.OrderingFilter  ]
+   #הגדרת השדות שפתוחות לפילטור
+
+    search_fields = [#אילו שדות נכללים בחיפוש
         'business_name',
         'kashrut_level',
         'address',
         'user__username',
         'user__email'
     ]
-    ordering_fields = [
+    ordering_fields = [# אילו שדות מותר למיין לפיהם
         'business_name',
         'created_at',
         'is_active'
     ]
     ordering = ['-created_at']  # ברירת מחדל:
+   #קובע באופן דינמי איזה מההרשאות יבדקו עבור כל פעולה
     def get_permissions(self):
 
-        # 🔐 אבטחה - Principle of Least Privilege
-       # כל פעולה מקבלת רק את ההרשאות המינימליות הנדרשות
-       #  ──────────────────────────────────────────────────────────
+        #  ──────────────────────────────────────────────────────────
        #  📖 קריאה (GET) - כולם
        #  ──────────────────────────────────────────────────────────
         if self.action in ['list', 'retrieve']:
@@ -64,19 +62,18 @@ class VendorProfileViewSet(viewsets.ModelViewSet):
 
         queryset = super().get_queryset()
 
-        queryset = queryset.filter(is_active=True)
 
-        city = self.request.query_params.get('city', None)
-        if city:
-            queryset = queryset.filter(address__icontains=city)
+        user = self.request.user
+        # אם המשתמש הוא מנהל (admin/superuser) - רואה הכול
+        if user.is_staff or user.is_superuser:
+         return queryset
 
-        return queryset
+        # כל השאר - רואים רק ספקים פעילים
+        return queryset.filter(is_active=True)
 
 
+#דריסת פונקצית המקור והוספת ולדציה של לוגיקה עסקית
     def create(self, request, *args, **kwargs):
-        """
-        יצירת ספק חדש עם וולידציה נוספת
-        """
         user_id = request.data.get('user')
 
         if VendorProfile.objects.filter(user_id=user_id).exists():
@@ -91,29 +88,16 @@ class VendorProfileViewSet(viewsets.ModelViewSet):
         # יצירה רגילה
         return super().create(request, *args, **kwargs)
 
-    def perform_create(self, serializer):
-        vendor = serializer.save()
+    #בהמשך הרחבת הפונקציות של ה-ViewSet
+def perform_create(self, serializer):
+    vendor = serializer.save()
 
-        print("ספק חדש: {} (משתמש: {})".format(
-            vendor.business_name,
-            vendor.user.username
-        ))
+    print(f" ספק נרשם: {vendor.business_name}")
 
-        # 💡 בעתיד: שליחת מייל, התראות
-
-
-    def perform_update(self, serializer):
-
-        vendor = serializer.save()
-
-
-        print("✏️ ספק עודכן: {vendor.business_name}")
-
-
+def perform_update(self, serializer):
+    vendor = serializer.save()
+    print(f"✏️ ספק עודכן: {vendor.business_name}")
 
 def perform_destroy(self, instance):
-
-        print("🗑️ ספק נמחק: {instance.business_name} (ID: {instance.id})")
-
-        # מחיקה בפועל
-        instance.delete()
+    print(f"🗑️ ספק נמחק: {instance.business_name} (ID: {instance.id})")
+    instance.delete()

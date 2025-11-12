@@ -2,10 +2,6 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import VendorProfileViewSet
 
-
-# ──────────────────────────────────────────────────────────────
-# 🔧 יצירת Router אוטומטי
-# ──────────────────────────────────────────────────────────────
 router = DefaultRouter()
 
 # רישום ה-ViewSet תחת הנתיב 'vendors'
