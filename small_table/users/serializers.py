@@ -1,12 +1,13 @@
-from rest_framework import serializers, filters
+# serializers.py
+from rest_framework import serializers
 from .models import User
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'username', 'email', 'password', 
-            'is_staff', 'is_active', 'phone', 'roles'
+            'id', 'username', 'email', 'password',
+            'is_staff', 'is_active', 'phone'
         ]
         extra_kwargs = {
             'password': {'write_only': True},  # לא מוחזר ב-GET
