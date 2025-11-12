@@ -1,4 +1,5 @@
 from rest_framework import permissions
+
 class IsVendorOwnerOrAdmin(permissions.BasePermission):
     """
     כללים:
@@ -6,7 +7,7 @@ class IsVendorOwnerOrAdmin(permissions.BasePermission):
     🏢 ספק (בעלים):               יכול לערוך רק את עצמו
     👤 אחרים:                      לא יכולים לערוך
     """
-
+#בדיקה ברמת האובייקט
     def has_object_permission(self, request, view, obj):
 
         # ──────────────────────────────────────────────────────────

@@ -31,7 +31,7 @@ class VendorProfile(models.Model):
         max_length=100,
         blank=True,
         null=True,
-        verbose_name='רמת כשרות'
+        verbose_name=' כשרות'
     )
 
     address = models.CharField(
