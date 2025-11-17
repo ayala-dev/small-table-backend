@@ -19,7 +19,7 @@ class OrderViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
 
     # שדות לסינון
-    filterset_fields = ['status', 'package_type', 'vendor']
+    filterset_fields = ['status', 'vendor']
 
     # שדות לחיפוש
     search_fields = ['user__username', 'vendor__business_name', 'note']

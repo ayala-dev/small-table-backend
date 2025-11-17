@@ -63,7 +63,6 @@ class OrderAdmin(admin.ModelAdmin):
         'user',
         'vendor',
         'package',
-        'package_type',
         'guests_count',
         'status',
         'total_price',
@@ -72,7 +71,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_filter = (
         'status',
-        'package_type',
+
         'vendor',
         'created_at',
     )
@@ -104,7 +103,7 @@ class OrderItemAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        'order__package_type',
+
         'package_category',
         'created_at',
     )
