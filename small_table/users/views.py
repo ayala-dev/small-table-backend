@@ -6,6 +6,8 @@ from .models import User
 from .serializers import UserSerializer
 from .permission import IsOwnerOrAdmin
 
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer

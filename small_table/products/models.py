@@ -21,7 +21,7 @@ class Product(models.Model):
         null=True,
         verbose_name='תיאור המוצר'
     )
-
+# רק לשם ארגון פנימי - לא חובה למלא
     category = models.CharField(
         max_length=100,
         blank=True,
@@ -29,13 +29,7 @@ class Product(models.Model):
         verbose_name='קטגוריה',
         help_text='למשל: סלטים, מנות עיקריות, קינוחים'
     )
-    # ⭐ מחיר בסיסי למנה - לשימוש בהרכבה אישית בלבד
-    base_price_per_person = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        verbose_name='מחיר למנה',
-        help_text='מחיר בסיסי למנה בהרכבה אישית (לא רלוונטי לחבילות מוכנות)'
-    )
+
     is_available = models.BooleanField(
         default=True,
         verbose_name='זמין להזמנה'

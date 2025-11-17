@@ -30,7 +30,7 @@ class VendorProfileSerializer(serializers.ModelSerializer):
             'created_at',
             'updated_at',
         ]
-        read_only_fields = [ 'id','created_at', 'updated_at']
+        read_only_fields = [ 'id','created_at', 'is_active', 'updated_at']
 
     def validate_business_name(self, value):
         """
