@@ -19,4 +19,4 @@ class UserViewSet(viewsets.ModelViewSet):
             return [AllowAny()]  # הרשאה ליצירת משתמש חדש
         elif self.action in ['update', 'partial_update', 'destroy']:
             return [IsAuthenticated(), IsOwnerOrAdmin()]  # עדכון/מחיקה רק למי שמחובר ומנהל או בעל החשבון
-        return [IsAuthenticated()]  # כל השאר דורש התחברות
+        return [IsAuthenticated()]  # כל לשנות
