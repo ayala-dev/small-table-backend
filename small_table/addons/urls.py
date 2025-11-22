@@ -1,6 +1,9 @@
-from django.urls import path
-from . import views
+from rest_framework.routers import DefaultRouter
 
-urlpatterns = [
-    # כאן תוכלי להוסיף נתיבים של API או views
-]
+from .views import AddonCategoryViewSet, AddonViewSet
+
+router = DefaultRouter()
+router.register(r'addon-categories', AddonCategoryViewSet, basename='addon-category')
+router.register(r'addons', AddonViewSet, basename='addon')
+
+urlpatterns = router.urls

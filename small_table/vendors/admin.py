@@ -1,13 +1,10 @@
 from django.contrib import admin
 from .models import VendorProfile
-
-
 @admin.register(VendorProfile)
 class VendorProfileAdmin(admin.ModelAdmin):
     """
     ממשק ניהול לפרופילי ספקים ב-Django Admin
     """
-
     # אילו שדות להציג ברשימה
     list_display = [
         'business_name',
@@ -22,19 +19,16 @@ class VendorProfileAdmin(admin.ModelAdmin):
         'user__username',
         'user__email'
     ]
-
     # פילטרים בצד (סינון)
     list_filter = [
         'is_active',
         'created_at'
     ]
-
     # שדות לקריאה בלבד (לא ניתן לערוך)
     readonly_fields = [
         'created_at',
         'updated_at'
     ]
-
     # סדר השדות בטופס העריכה
     fieldsets = (
         ('מידע בסיסי', {

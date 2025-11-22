@@ -32,7 +32,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     # שדות למיון
     ordering_fields = [
         'name',
-        'price',
+
         'created_at',
         'category'
     ]
@@ -42,7 +42,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     # סינון מדויק
     filterset_fields = {
         'category': ['exact', 'icontains'],
-        'price': ['exact', 'gte', 'lte'],
+
         'is_available': ['exact'],
         'vendor': ['exact']
     }

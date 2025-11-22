@@ -11,7 +11,7 @@ APPS = [
     "packages",
     "addons",
     "orders",
-    "blog",
+    "reviews",
     "qna",
     "api"
 ]
@@ -85,7 +85,7 @@ urlpatterns = [
     path('api/packages/', include('packages.urls')),
     path('api/addons/', include('addons.urls')),
     path('api/orders/', include('orders.urls')),
-    path('api/blog/', include('blog.urls')),
+    path('api/reviews/', include('reviews.urls')),
     path('api/qna/', include('qna.urls')),
     path('api/', include('api.urls')),
 ]
@@ -118,7 +118,7 @@ print("""
  ├── packages/
  ├── addons/
  ├── orders/
- ├── blog/
+ ├── reviews/
  ├── qna/
  ├── api/
  └── venv/

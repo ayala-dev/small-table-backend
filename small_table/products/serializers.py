@@ -19,7 +19,6 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_name',
             'description',
             'category',
-            'base_price_per_person',
             'is_available',
             'image',
             'created_at',

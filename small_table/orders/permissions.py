@@ -1,55 +1,71 @@
 from rest_framework import permissions
 
 
-class IsOrderOwnerOrVendor(permissions.BasePermission):
+class IsOrderOwnerOrVendorOrAdmin(permissions.BasePermission):
     """
-    הרשאה מותאמת:
-    - לקוח יכול לראות/לערוך רק הזמנות שלו
-    - ספק יכול לראות/לערוך הזמנות שהוזמנו ממנו
-    - רק הספק יכול לעדכן את הסטטוס
+    הרשאה להזמנה:
+    - לקוח: רואה/מעדכן רק את ההזמנות שלו (ללא שינוי סטטוס)
+    - ספק: רואה/מעדכן הזמנות ששייכות אליו (יכול לשנות סטטוס)
+    - admin (role 'admin' או staff/superuser): רואה הכל
     """
 
     def has_object_permission(self, request, view, obj):
-        """
-        בדיקת הרשאה על אובייקט ספציפי (הזמנה מסוימת).
-        """
         user = request.user
 
-        # בדיקה אם המשתמש הוא בעל ההזמנה
-        if obj.user == user:
-            # לקוח יכול לראות ולערוך את ההזמנה שלו (אבל לא את הסטטוס)
-            if request.method in permissions.SAFE_METHODS:
-                # GET, HEAD, OPTIONS - מותר
-                return True
+        if not user or not user.is_authenticated:
+            return False
 
-            # PUT, PATCH - מותר רק אם לא מנסה לשנות סטטוס
+        has_admin_role = getattr(user, 'user_roles', None) and user.user_roles.filter(
+            role__name='admin'
+        ).exists()
+
+        if has_admin_role or user.is_staff or user.is_superuser:
+            return True
+
+        # האם זה הלקוח שביצע את ההזמנה?
+        if obj.user == user:
+            if request.method in permissions.SAFE_METHODS:
+                return True
             if 'status' in request.data:
                 return False
             return True
 
-        # בדיקה אם המשתמש הוא הספק של ההזמנה
+        # האם זה הספק של ההזמנה?
         if hasattr(user, 'vendor_profile') and obj.vendor == user.vendor_profile:
-            # ספק יכול לראות ולעדכן הכל (כולל סטטוס)
             return True
 
-        # אחרת - אין הרשאה
         return False
 
 
-class IsVendorOrReadOnly(permissions.BasePermission):
+class IsOrderAddonOwnerOrVendorOrAdmin(permissions.BasePermission):
     """
-    הרשאה פשוטה:
-    - כולם יכולים לקרוא (GET)
-    - רק ספק יכול לכתוב (POST, PUT, PATCH, DELETE)
+    הרשאה לפריטי OrderAddon:
+    - admin: הכל
+    - ספק: יכול לקרוא/לערוך תוספות להזמנות שלו
+    - לקוח: יכול רק לראות תוספות בהזמנות שלו (לא לערוך)
     """
 
-    def has_permission(self, request, view):
-        """
-        בדיקת הרשאה כללית.
-        """
-        # קריאה - מותר לכולם
-        if request.method in permissions.SAFE_METHODS:
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+
+        if not user or not user.is_authenticated:
+            return False
+
+        order = obj.order
+
+        has_admin_role = getattr(user, 'user_roles', None) and user.user_roles.filter(
+            role__name='admin'
+        ).exists()
+
+        if has_admin_role or user.is_staff or user.is_superuser:
             return True
 
-        # כתיבה - רק לספקים
-        return hasattr(request.user, 'vendor_profile')
+        # לקוח – רק קריאה
+        if order.user == user:
+            return request.method in permissions.SAFE_METHODS
+
+        # ספק שייך להזמנה – יכול לערוך
+        if hasattr(user, 'vendor_profile') and order.vendor == user.vendor_profile:
+            return True
+
+        return False
