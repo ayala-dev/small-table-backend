@@ -43,13 +43,14 @@ INSTALLED_APPS = [
     'packages',
     'addons',
     'orders',
-    'blog',
+    'reviews',
     'qna',
     'api',
     'roles',  
      'user_roles',
     'corsheaders',
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -148,6 +149,7 @@ STATIC_ROOT = BASE_DIR / 'static'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+
     ],
 
     'DEFAULT_PERMISSION_CLASSES': [
@@ -162,6 +164,7 @@ REST_FRAMEWORK = {
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',  # ← מחזיר את ה-HTML
     ],
+
 }
 
 

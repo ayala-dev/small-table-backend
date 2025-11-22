@@ -1,60 +1,64 @@
 from django.contrib import admin
+
 from .models import Order, OrderItem
 from products.models import Product
 from packages.models import PackageCategory
 
+
 class OrderItemInline(admin.TabularInline):
+    """
+    עריכת פריטי הזמנה מתוך מסך ההזמנה.
+    """
     model = OrderItem
     extra = 0
-    readonly_fields = ('created_at', 'get_subtotal')
+    readonly_fields = ('created_at', 'get_extra_subtotal')
     fields = (
-        'product',
         'package_category',
-        'quantity',
-        'price_snapshot',
+        'product',
+        'is_premium',
         'extra_price_per_person',
-        'get_subtotal',
+        'get_extra_subtotal',
     )
 
-    # ⭐ סינון דינמי של חבילות לפי הספק שנבחר
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "package_category":
-            # אם יש order_id בURL (עריכה)
-            if request.resolver_match.kwargs.get('object_id'):
-                order_id = request.resolver_match.kwargs['object_id']
-                try:
-                    order = Order.objects.get(id=order_id)
-                    # הצג רק קטגוריות מהחבילה שנבחרה
-                    if order.package:
-                        kwargs["queryset"] = PackageCategory.objects.filter(
-                            package=order.package
-                        )
-                    else:
-                        kwargs["queryset"] = PackageCategory.objects.none()
-                except Order.DoesNotExist:
-                    pass
+        """
+        סינון דינמי:
+        - package_category: רק קטגוריות של החבילה שנבחרה
+        - product: אפשר לסנן לפי ספק אם רוצים (כאן פתוח לכל המוצרים)
+        """
+        if not hasattr(request, 'resolver_match') or not request.resolver_match:
+            return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-        if db_field.name == "product":
-            # אם יש order_id בURL
-            if request.resolver_match.kwargs.get('object_id'):
-                order_id = request.resolver_match.kwargs['object_id']
-                try:
-                    order = Order.objects.get(id=order_id)
-                    # הצג רק מוצרים של אותו ספק
-                    kwargs["queryset"] = Product.objects.filter(
-                        vendor=order.vendor
-                    )
-                except Order.DoesNotExist:
-                    pass
+        object_id = request.resolver_match.kwargs.get('object_id')
+
+        if db_field.name == "package_category" and object_id:
+            try:
+                order = Order.objects.get(id=object_id)
+                kwargs["queryset"] = PackageCategory.objects.filter(
+                    package=order.package
+                )
+            except Order.DoesNotExist:
+                pass
+
+        if db_field.name == "product" and object_id:
+            # אם רוצים להגביל למוצרים של ספק ההזמנה:
+            try:
+                order = Order.objects.get(id=object_id)
+                kwargs["queryset"] = Product.objects.filter(
+                    vendor=order.vendor
+                )
+            except Order.DoesNotExist:
+                pass
 
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
-    def get_subtotal(self, obj):
+    def get_extra_subtotal(self, obj):
         if obj.id:
-            return f"{obj.subtotal:.2f} ₪"
+            return f"{obj.extra_subtotal:.2f} ₪"
         return "-"
 
-    get_subtotal.short_description = 'סכום חלקי'
+    get_extra_subtotal.short_description = 'סכום תוספת'
+
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
@@ -71,8 +75,8 @@ class OrderAdmin(admin.ModelAdmin):
 
     list_filter = (
         'status',
-
         'vendor',
+        'package',
         'created_at',
     )
 
@@ -83,7 +87,7 @@ class OrderAdmin(admin.ModelAdmin):
         'package__name',
     )
 
-    readonly_fields = ('created_at',)
+    readonly_fields = ('created_at', 'total_price')
     inlines = [OrderItemInline]
     ordering = ('-created_at',)
 
@@ -95,33 +99,27 @@ class OrderItemAdmin(admin.ModelAdmin):
         'order',
         'product',
         'package_category',
-        'quantity',
-        'price_snapshot',
+        'is_premium',
         'extra_price_per_person',
-        'get_subtotal',
-        'get_is_premium',
+        'get_extra_subtotal',
+        'created_at',
     )
 
     list_filter = (
-
+        'is_premium',
         'package_category',
         'created_at',
     )
 
     search_fields = (
         'order__id',
-        'product__product_name',
+        'product__name',
         'order__user__username',
     )
 
-    readonly_fields = ('created_at', 'get_subtotal')
+    readonly_fields = ('created_at', 'get_extra_subtotal')
 
-    def get_subtotal(self, obj):
-        return f"{obj.subtotal:.2f} ₪"
+    def get_extra_subtotal(self, obj):
+        return f"{obj.extra_subtotal:.2f} ₪"
 
-    get_subtotal.short_description = 'סכום חלקי'
-
-    def get_is_premium(self, obj):
-        return "✅ משודרג" if obj.is_premium else "רגיל"
-
-    get_is_premium.short_description = 'סוג'
+    get_extra_subtotal.short_description = 'סכום תוספת'
